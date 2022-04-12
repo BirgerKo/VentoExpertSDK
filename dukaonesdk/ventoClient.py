@@ -1,4 +1,4 @@
-"""Implements a client for making a udp connection to the duka one devices """
+"""Implements a client for making a udp connection to the Baluberg Vento Expert devices """
 import socket
 import threading
 import time
@@ -6,12 +6,12 @@ import time
 from socket import SOL_SOCKET, SO_REUSEADDR, SO_BROADCAST
 
 from .device import Device, Mode, Speed
-from .dukapacket import DukaPacket
+from .dukapacket import VentoPacket
 from .responsepacket import ResponsePacket
 
 
-class DukaClient:
-    """Client object for making connection to the duka devices."""
+class VentoClient:
+    """Client object for making connection to the Baluberg Vento Expert devices."""
 
     _mutex = threading.Lock()
 
@@ -44,7 +44,7 @@ class DukaClient:
         if device is None:
             device = Device(device_id, password, ip_address, onchange)
             self._devices[device_id] = device
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_get_firmware_cmd(device)
         self.__send_data(device, packet.data)
         return device
@@ -68,10 +68,10 @@ class DukaClient:
 
     def search_devices(self, callback):
         self._found_device_callback = callback
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_search_cmd()
         self.__wait_for_socket()
-        with DukaClient._mutex:
+        with VentoClient._mutex:
             self._sock.sendto(packet.data, ("<broadcast>", 4000))
 
     def set_speed(self, device: Device, speed: Speed):
@@ -85,7 +85,7 @@ class DukaClient:
             self.turn_on(device)
             time.sleep(0.2)
 
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_speed_cmd(device, speed)
         data = packet.data
         self.__send_data(device, data)
@@ -96,7 +96,7 @@ class DukaClient:
             self.set_speed(device, Speed.MANUAL)
             time.sleep(0.2)
 
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_manualspeed_cmd(device, manualspeed)
         data = packet.data
         self.__send_data(device, data)
@@ -105,7 +105,7 @@ class DukaClient:
         """Turn off the specified device"""
         if device.speed == Speed.OFF:
             return
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_off_cmd(device)
         data = packet.data
         self.__send_data(device, data)
@@ -114,7 +114,7 @@ class DukaClient:
         """Turn on the specified device"""
         if device.speed != Speed.OFF:
             return
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_on_cmd(device)
         data = packet.data
         self.__send_data(device, data)
@@ -123,14 +123,14 @@ class DukaClient:
         """Set the mode of the specified device"""
         if device.mode == Mode:
             return
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_mode_cmd(device, mode)
         data = packet.data
         self.__send_data(device, data)
 
     def reset_filter_alarm(self, device: Device):
         """Reset the filter alarm"""
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_reset_filter_alarm_cmd(device)
         self.__send_data(device, packet.data)
 
@@ -161,10 +161,10 @@ class DukaClient:
             self.remove_device(device.device_id)
 
     def __update_device_status(self, device: Device):
-        """Update the device status from the DukaClient
+        """Update the device status from the VentoClient
         You should not call this youself
         """
-        packet = DukaPacket()
+        packet = VentoPacket()
         packet.initialize_status_cmd(device)
         data = packet.data
         self.__send_data(device, data)
@@ -179,7 +179,7 @@ class DukaClient:
         Protect it with a mutex to prevent multiple threads doint it at the
         same time"""
         self.__wait_for_socket()
-        with DukaClient._mutex:
+        with VentoClient._mutex:
             self._sock.sendto(data, (device.ip_address, 4000))
 
     def __wait_for_socket(self):
