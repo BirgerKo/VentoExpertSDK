@@ -1,4 +1,5 @@
-"""Implements a client for making a udp connection to the Baluberg Vento Expert devices """
+# Implements a client for making a udp connection to the Blauberg Vento Expert devices
+
 import socket
 import threading
 import time
@@ -6,12 +7,12 @@ import time
 from socket import SOL_SOCKET, SO_REUSEADDR, SO_BROADCAST
 
 from .device import Device, Mode, Speed
-from .dukapacket import VentoPacket
+from .ventoPacket import VentoExpertPacket
 from .responsepacket import ResponsePacket
 
 
 class VentoClient:
-    """Client object for making connection to the Baluberg Vento Expert devices."""
+    """ Client object for making connection to the Blauberg Vento Expert devices """
 
     _mutex = threading.Lock()
 
@@ -44,7 +45,7 @@ class VentoClient:
         if device is None:
             device = Device(device_id, password, ip_address, onchange)
             self._devices[device_id] = device
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_get_firmware_cmd(device)
         self.__send_data(device, packet.data)
         return device
@@ -68,7 +69,7 @@ class VentoClient:
 
     def search_devices(self, callback):
         self._found_device_callback = callback
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_search_cmd()
         self.__wait_for_socket()
         with VentoClient._mutex:
@@ -85,7 +86,7 @@ class VentoClient:
             self.turn_on(device)
             time.sleep(0.2)
 
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_speed_cmd(device, speed)
         data = packet.data
         self.__send_data(device, data)
@@ -96,7 +97,7 @@ class VentoClient:
             self.set_speed(device, Speed.MANUAL)
             time.sleep(0.2)
 
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_manualspeed_cmd(device, manualspeed)
         data = packet.data
         self.__send_data(device, data)
@@ -105,7 +106,7 @@ class VentoClient:
         """Turn off the specified device"""
         if device.speed == Speed.OFF:
             return
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_off_cmd(device)
         data = packet.data
         self.__send_data(device, data)
@@ -114,7 +115,7 @@ class VentoClient:
         """Turn on the specified device"""
         if device.speed != Speed.OFF:
             return
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_on_cmd(device)
         data = packet.data
         self.__send_data(device, data)
@@ -123,20 +124,18 @@ class VentoClient:
         """Set the mode of the specified device"""
         if device.mode == Mode:
             return
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_mode_cmd(device, mode)
         data = packet.data
         self.__send_data(device, data)
 
     def reset_filter_alarm(self, device: Device):
         """Reset the filter alarm"""
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_reset_filter_alarm_cmd(device)
         self.__send_data(device, packet.data)
 
-    def validate_device(
-        self, device_id: str, password: str = None, ip_address: str = "<broadcast>"
-    ) -> Device:
+    def validate_device(self, device_id: str, password: str = None, ip_address: str = "<broadcast>") -> Device:
         """Validate if a device exist and repsonds.
         Returns None if the device does not exist
         Returns the Device object if it exist
@@ -164,7 +163,7 @@ class VentoClient:
         """Update the device status from the VentoClient
         You should not call this youself
         """
-        packet = VentoPacket()
+        packet = VentoExpertPacket()
         packet.initialize_status_cmd(device)
         data = packet.data
         self.__send_data(device, data)

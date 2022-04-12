@@ -1,22 +1,22 @@
-"""
-Create a file called ".deviceid" in the current folder.
-This file should contain  the duka one device id.
-You can see the duka one device id in the duka one app.
-"""
+# Create a file called ".deviceid" in the current folder.
+# This file should contain the device id.
+# You can see the device id in the respective mobile phone apps for the relvant supplier of the fans. Blauberg, Vents, Duka.
+
 import sys
 import time
 
-from dukaonesdk.dukaclient import DukaClient
-from dukaonesdk.device import Device, Mode
+from VentoExpertSDK.ventoClient import VentoClient, Device, Mode
+# from VentoExpertSDK.device import Device, Mode
 
 
 def onchange(device: Device):
-    """Callback function when device changes"""
+    # Callback function when device changes
     print(
         f"ip: {device.ip_address}"
         f" speed: {device.speed},"
         f" manualspeed: {device.manualspeed},"
         f" fan1rpm: {device.fan1rpm},"
+        f" fan2rpm: {device.fan2rpm},"
         f" mode: {device.mode},"
         f" humidity: {device.humidity},"
         f" filter alarm: {device.filter_alarm},"
@@ -29,16 +29,17 @@ def newdevice_callback(deviceid: str):
 
 
 def main():
-    """Main example """
-    client: DukaClient = DukaClient()
+    # Main example
+    client: VentoClient = VentoClient()
     client.search_devices(newdevice_callback)
     time.sleep(5)
 
     # read the device id
-    with open(".deviceid", "r") as file:
+    with open(".deviceid.txt", "r") as file:
         device_id = file.readline().replace("\n", "")
-    # initialize the DukaClient and add the device
-    mydevice: Device = client.validate_device(device_id, ip_address="192.168.1.255")
+        print(f"Device Id read from file: {device_id}")
+    # initialize the VentoClient and add the device
+    mydevice: Device = client.validate_device(device_id, ip_address="192.168.29.210")
     if mydevice is None:
         print("Device does not respond")
     else:
