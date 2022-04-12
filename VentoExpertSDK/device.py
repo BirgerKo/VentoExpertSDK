@@ -1,11 +1,11 @@
-"""Implements the duka one device class """
+"""Implements the Blauberg Vento Expert device class """
 import time
 from .mode import Mode
 from .speed import Speed
 
 
 class Device:
-    """A class representing a single Duke One Device"""
+    """A class representing a single Blauberg Vento Expert device"""
 
     def __init__(
         self,
@@ -83,7 +83,7 @@ class Device:
 
     @property
     def firmware_version(self) -> str:
-        """Return the firmware version of the duka one device"""
+        """Return the firmware version of the device"""
         return self._firmware_version
 
     @property
