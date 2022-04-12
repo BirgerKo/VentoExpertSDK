@@ -1,11 +1,11 @@
 """Implements a class for the UDP data packet"""
 from .mode import Mode
 from .speed import Speed
-from .dukapacket import DukaPacket
+from .VentoPacket import VentoPacket
 
 
-class ResponsePacket(DukaPacket):
-    """A udp data packet from the duka device."""
+class ResponsePacket(VentoPacket):
+    """A udp data packet from the device."""
 
     parameter_size = {
         0x01: 1,  # On off
