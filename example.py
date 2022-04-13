@@ -54,7 +54,7 @@ def main():
             print(
                 "Press one key and enter. "
                 "1-3 for speed, 0=off, 9=on,b,n,m for mode,"
-                " f for reset filter alarm, q for quit"q
+                " f for reset filter alarm, q for quit"
             )
             char = sys.stdin.read(2)[0]
             if char == "q":
