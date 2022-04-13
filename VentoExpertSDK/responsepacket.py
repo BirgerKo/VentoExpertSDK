@@ -2,6 +2,9 @@
 from .mode import Mode
 from .speed import Speed
 from .ventoPacket import VentoExpertPacket
+from VentoExpertSDK.source import function
+from VentoExpertSDK.source import parameter
+import traceback
 
 
 class ResponsePacket(VentoExpertPacket):
@@ -53,6 +56,10 @@ class ResponsePacket(VentoExpertPacket):
         0xB9: 2,  # Unit type
     }
 
+    def __print_data(self, data):
+        """Print data in hex - for debugging purpose """
+        print("".join("{:02x}".format(x) for x in data), " in responspacket")
+
     def __init__(self):
         super(ResponsePacket, self).__init__()
         self.device_id = None
@@ -86,10 +93,14 @@ class ResponsePacket(VentoExpertPacket):
             self.device_id = self.read_string()
             self.device_password = self.read_string()
             func = self.read_byte()
-            if func != self.Func.RESPONSE.value:
+            if func != function.RESPONSE:
+                # The search command sent out to "DEFAULT_DEVICEID" will be read here as it goes out as a broadcast and is received with type READ.
+                # That is not a fault.
                 return False
             return self.read_parameters()
         except Exception:
+            print("EXCEPTION in init data")
+            traceback.print_exc()
             return False
 
     def is_header_ok(self):
@@ -112,29 +123,29 @@ class ResponsePacket(VentoExpertPacket):
 
     def read_parameters(self) -> bool:
         while self._pos < len(self._data) - 3:
-            parameter = self.read_byte()
+            parameters = self.read_byte()
             size = 1
-            if parameter == 0xFE:
+            if parameters == 0xFE:
                 # change parameter size
                 size = self.read_byte()
-                parameter = self.read_byte()
+                parameters = self.read_byte()
             else:
-                if parameter not in self.parameter_size:
+                if parameters not in self.parameter_size:
                     return False
-                size = self.parameter_size[parameter]
-            if parameter == self.Parameters.ON_OFF.value:
+                size = self.parameter_size[parameters]
+            if parameters == parameter.ON_OFF:
                 self.is_on = self._data[self._pos] != 0
-            elif parameter == self.Parameters.SPEED.value:
+            elif parameters == parameter.SPEED:
                 self.speed = self._data[self._pos]
-            elif parameter == self.Parameters.MANUAL_SPEED.value:
+            elif parameters == parameter.MANUAL_SPEED:
                 self.manualspeed = self._data[self._pos]
-            elif parameter == self.Parameters.FAN1RPM.value:
+            elif parameters == parameter.FAN1RPM:
                 self.fan1rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
-            elif parameter == self.Parameters.CURRENT_HUMIDITY.value:
+            elif parameters == parameter.CURRENT_HUMIDITY:
                 self.humidity = self._data[self._pos]
-            elif parameter == self.Parameters.VENTILATION_MODE.value:
+            elif parameters == parameter.VENTILATION_MODE:
                 self.mode = self._data[self._pos]
-            elif parameter == self.Parameters.READ_FIRMWARE_VERSION.value:
+            elif parameters == parameter.READ_FIRMWARE_VERSION:
                 major = self._data[self._pos]
                 minor = self._data[self._pos + 1]
                 self.firmware_version = f"{major}.{minor}"
@@ -142,16 +153,16 @@ class ResponsePacket(VentoExpertPacket):
                 month = self._data[self._pos + 3]
                 year = self._data[self._pos + 4] + (self._data[self._pos + 5] << 8)
                 self.firmware_date = f"{day}-{month}-{year}"
-            elif parameter == self.Parameters.UNIT_TYPE.value:
+            elif parameters == parameter.UNIT_TYPE:
                 self.unit_type = self._data[self._pos]
-            elif parameter == self.Parameters.FILTER_ALARM.value:
+            elif parameters == parameter.FILTER_ALARM:
                 self.filter_alarm = self._data[self._pos]
-            elif parameter == self.Parameters.FILTER_TIMER.value:
+            elif parameters == parameter.FILTER_TIMER:
                 self.filter_timer = (
                     self._data[self._pos]
                     + (self._data[self._pos + 2] * 24 + self._data[self._pos + 1]) * 60
                 )
-            elif parameter == self.Parameters.SEARCH.value:
+            elif parameters == parameter.SEARCH:
                 self.search_device_id = ""
                 for i in range(self._pos, self._pos + 16):
                     self.search_device_id += chr(self._data[i])

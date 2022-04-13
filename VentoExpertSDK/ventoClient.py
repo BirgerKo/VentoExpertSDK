@@ -228,27 +228,8 @@ class VentoClient:
                 # wait 1 sec and try again
                 time.sleep(1)
 
-    def __receive_data(self):
-        """Receive data from the socket.
-        If there is a timeout. Send an update command the the devices.
-        Return (None, None) where there is no data to process
-        """
-        try:
-            data, addr = self._sock.recvfrom(1024)
-            return (data, addr)
-        except socket.timeout:
-            try:
-                self.__update_all_device_status()
-            except socket.error:
-                # recreate soket on error
-                self.__close_socket()
-        except socket.error:
-            # recreate soket on error
-            self.__close_socket()
-        return (None, None)
-
     def __notify_fn(self):
-        """Notify thread listening for responses from duka devices.
+        """Notify thread listening for responses from fan devices.
         This will handle recreating of the socket in case of network errors
         """
         self._notifyrunning = True
@@ -275,6 +256,25 @@ class VentoClient:
         finally:
             self.__close_socket()
             self._notifyrunning = False
+
+    def __receive_data(self):
+        """Receive data from the socket.
+        If there is a timeout. Send an update command the the devices.
+        Return (None, None) where there is no data to process
+        """
+        try:
+            data, addr = self._sock.recvfrom(1024)
+            return (data, addr)
+        except socket.timeout:
+            try:
+                self.__update_all_device_status()
+            except socket.error:
+                # recreate soket on error
+                self.__close_socket()
+        except socket.error:
+            # recreate soket on error
+            self.__close_socket()
+        return (None, None)
 
     def update_device(self, device, ip_address: str, packet: ResponsePacket):
         """Update the device with data recieved. Called by the dukaclient"""
