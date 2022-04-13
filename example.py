@@ -16,7 +16,7 @@ def onchange(device: Device):
         f" speed: {device.speed},"
         f" manualspeed: {device.manualspeed},"
         f" fan1rpm: {device.fan1rpm},"
-        f" fan2rpm: {device.fan2rpm},"
+        # f" fan2rpm: {device.fan2rpm},"
         f" mode: {device.mode},"
         f" humidity: {device.humidity},"
         f" filter alarm: {device.filter_alarm},"
@@ -30,24 +30,23 @@ def newdevice_callback(deviceid: str):
 
 def main():
     # Main example
-    client: VentoClient = VentoClient()
-    client.search_devices(newdevice_callback)
+    fanClient: VentoClient = VentoClient()
+    fanClient.search_devices(newdevice_callback)
+    # print("\n Number of clients", fanClient.get_device_count())
     time.sleep(5)
 
-    # read the device id
+    # read the device id from file
     with open(".deviceid.txt", "r") as file:
         device_id = file.readline().replace("\n", "")
         print(f"Device Id read from file: {device_id}")
     # initialize the VentoClient and add the device
-    mydevice: Device = client.validate_device(device_id, ip_address="192.168.29.210")
+    mydevice: Device = fanClient.validate_device(device_id, ip_address="192.168.29.255")
     if mydevice is None:
         print("Device does not respond")
     else:
-        mydevice = client.add_device(
-            device_id, ip_address=mydevice.ip_address, onchange=onchange
-        )
+        mydevice = fanClient.add_device(device_id, ip_address=mydevice.ip_address, onchange=onchange)
+        
         print("Device added")
-
         print(f"Firmware version: {mydevice.firmware_version}")
         print(f"Firmware date: {mydevice.firmware_date}")
         print(f"Unit type: {mydevice.unit_type}")
@@ -55,29 +54,29 @@ def main():
             print(
                 "Press one key and enter. "
                 "1-3 for speed, 0=off, 9=on,b,n,m for mode,"
-                " f for reset filter alarm, q for quit"
+                " f for reset filter alarm, q for quit"q
             )
             char = sys.stdin.read(2)[0]
             if char == "q":
                 break
             if char >= "0" and char <= "3":
-                client.set_speed(mydevice, ord(char) - ord("0"))
+                fanClient.set_speed(mydevice, ord(char) - ord("0"))
             if char >= "4" and char <= "8":
                 manualspeed = ((ord(char) - ord("4")) * 50) + 50
-                client.set_manual_speed(mydevice, manualspeed)
+                fanClient.set_manual_speed(mydevice, manualspeed)
             if char == "9":
-                client.turn_on(mydevice)
+                fanClient.turn_on(mydevice)
             if char == "b":
-                client.set_mode(mydevice, Mode.ONEWAY)
+                fanClient.set_mode(mydevice, Mode.ONEWAY)
             if char == "n":
-                client.set_mode(mydevice, Mode.TWOWAY)
+                fanClient.set_mode(mydevice, Mode.TWOWAY)
             if char == "m":
-                client.set_mode(mydevice, Mode.IN)
+                fanClient.set_mode(mydevice, Mode.IN)
             if char == "f":
-                client.reset_filter_alarm(mydevice)
+                fanClient.reset_filter_alarm(mydevice)
 
     print("Closing")
-    client.close()
+    fanClient.close()
     print("Done")
 
     exit(0)
