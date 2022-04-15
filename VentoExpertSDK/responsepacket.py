@@ -1,9 +1,9 @@
 # Implements a class for the UDP data packet
 from .mode import Mode
-from .speed import Speed
 from .ventoPacket import VentoExpertPacket
 from VentoExpertSDK.source import function
 from VentoExpertSDK.source import parameter
+from VentoExpertSDK.source import speed
 import traceback
 
 
@@ -11,54 +11,67 @@ class ResponsePacket(VentoExpertPacket):
     # A udp data packet from the device
 
     parameter_size = {
-        0x01: 1,  # On off
-        0x02: 1,  # Speed 1-3 255=manual
-        0x06: 1,  # Boot mode
-        0x07: 1,  # Timer mode
-        0x0B: 3,  # Timer countdown
-        0x0F: 1,  # Humidity sensor activation
-        0x14: 1,  # Relay sensor activation
-        0x16: 1,  # 0-10v sensor activation
-        0x19: 1,  # Humidity threshold
-        0x24: 2,  # Current RTC battery voltage 0-5000mv
-        0x25: 1,  # Current humidity 0-100
-        0x2D: 1,  # Current 0-10v sensor 0-100
-        0x32: 1,  # Current relay sensor state
-        0x44: 1,  # Manual speed
-        0x4A: 2,  # Fan 1 speed 0-5000rpm
-        0x4B: 2,  # Fan 2 speed 0-5000rpm
-        0x64: 3,  # Filter timer byte 1=minutes, byte 2=hours, byte 3=days
-        0x65: 1,  # Reset filter timer (1 byte data is ignored)
-        0x66: 1,  # Boost mode deactivation delay 0-60 minutes
-        0x6F: 3,  # RTC time
-        0x70: 4,  # RTC calender
-        0x72: 1,  # Weekly schedule
-        0x77: 6,  # Schedule setup
-        0x7C: 16,  # device search
-        0x7D: 0,  # Device password
-        0x7E: 4,  # MAchine hours
-        0x80: 1,  # Reset alarms
-        0x83: 1,  # Alarm indicator 0=no,1=Alarm, 2=warning
-        0x85: 1,  # Cloud server operation permission
-        0x86: 6,  # Firmware version and date
-        0x87: 1,  # Restore factory settings
-        0x88: 1,  # Filter replacement 0=ok, 1=replace
-        0x94: 1,  # Wifi mode
-        0x95: 0,  # Wifi name in client mode
-        0x96: 0,  # Wifi password
-        0x99: 1,  # Wifi encryption
-        0x9A: 1,  # Wifi channel 1-13
-        0x9B: 1,  # Wifi DHCP
-        0x9C: 4,  # IP Address
-        0x9D: 4,  # Subnet mask
-        0x9E: 4,  # Gateway
-        0xB7: 1,  # Ventilator mode 0=ventilation,1=heat recovery,2=supply
-        0xB9: 2,  # Unit type
+        # see parmeter.py for documentation to avoid duplicates here
+        # see Blauberg doc for packet lenghts documentation
+        parameter.ON_OFF: 1,
+        parameter.SPEED: 1,
+        parameter.BOOST_MODE_STATUS: 1,
+        parameter.TIMER_MODE: 1,
+        parameter.TIMER_COUNTDOWN: 3,
+        parameter.HUMIDITY_SENSOR: 1,
+        parameter.RELAY_SENSOR: 1,
+        parameter.ZERO_10V_SENSOR: 1,
+        parameter.HUMIDITY_THRESHOLD_SETPOINT: 1,
+        parameter.CURRENT_RTC_BATTERY_VOLTAGE: 2,
+        parameter.CURRENT_HUMIDITY: 1,
+        parameter.CURRENT_ZERO_10V_SENSOR_VALUE: 1,
+        parameter.CURRENT_REALY_SENSOR_STATE: 1,
+        parameter.MANUAL_SPEED: 1,
+        parameter.FAN1RPM: 2,
+        parameter.FAN2RPM: 2,
+        parameter.FILTER_TIMER: 3,
+        parameter.RESET_FILTER_TIMER: 1,
+        parameter.BOST_MODE_DEACTIVATION_SETPOINT: 1,
+        parameter.RTC_TIMER: 3,
+        parameter.RTC_CALENDAR: 4,
+        parameter.WEEKLY_SCHEDULE_MODE: 1,
+        parameter.SCHEDULE_SETUP: 6,
+        parameter.SEARCH: 16,
+        parameter.DEVICE_PASSWORD: 0,
+        parameter.MACHINE_HOURS: 4,
+        parameter.RESET_ALARMS: 1,
+        parameter.READ_ALARM: 1,
+        parameter.CLOUD_OPERATION: 1,
+        parameter.READ_FIRMWARE_VERSION: 6,
+        parameter.RESTORE_FACTORY_SETTINGS: 1,
+        parameter.FILTER_ALARM: 1,
+        parameter.WIFI_OPERATION_MODE: 1,
+        parameter.WIFI_CLIENT_NAME: 0,
+        parameter.WIFI_PASSWORD: 0,
+        parameter.WIFI_ENCRYPTION: 1,
+        parameter.WIFI_CHANNEL: 1,
+        parameter.WIFI_IP_MODE: 1,
+        parameter.ASSIGNED_IP_ADDRESS: 4,
+        parameter.ASSIGNED_IP_SUBNET_MASK: 4,
+        parameter.ASSIGNED_IP_GATEWAY: 4,
+        parameter.APPLY_QUIT_SETUP_MODE: 1,
+        parameter.DISCARD_QUIT_SETUP_MODE: 1,
+        parameter.CURRENT_IP_ADDRESS: 4,
+        parameter.VENTILATION_MODE: 1,
+        parameter.UNIT_TYPE: 2,
+        parameter.SC_CHANGE_FUNCTION_NUMBER: 1,  # Just dummy so all are in the list. Length will vary.
+        parameter.SC_PARAMETER_NOT_SUPPORTED: 1,
+        parameter.SC_CHANGE_VALUE_SIZE: 1,       # Just dummy so all are in the list. Length will vary.
+        parameter.SC_CHANGE_HIGH_BYTE: 1,
+        parameter.NIGHT_MODE_TIMER_SETPOINT: 3,
+        parameter.PARTY_MODE_TIMER_SETPOINT: 3,
+        parameter.HUMIDITY_SETPOINT_STATUS: 1,
+        parameter.ZERO_10V_SENSOR_STATUS: 1,
     }
 
     def __print_data(self, data):
         """Print data in hex - for debugging purpose """
-        print("".join("{:02x}".format(x) for x in data), " in responspacket")
+        print(" ".join("{:02x}".format(x) for x in data), " in responsepacket")
 
     def __init__(self):
         super(ResponsePacket, self).__init__()
@@ -66,12 +79,24 @@ class ResponsePacket(VentoExpertPacket):
         self.device_password = None
         self.is_on = None
         self.speed: Speed = None
+        self.boostModeStatus = None
+        self.timerMode = None
+        self.timerCountdown = None
+        self.humiditySensor = None
+        self.relaySensor = None
+        self.voltSensorMode = None
+        self.humidityThreshholdSetpoint = None
+        self.rtcBatteryVolt = None
+        self.humidity = None            # Current humidity
         self.manualspeed = None
         self.fan1rpm = None
-        self.humidity = None
+        self.fan2rpm = None
         self.mode: Mode = None
         self.filter_alarm = None
-        self.filter_timer = None
+        self.filter_timer_minutes = None    # interg representation
+        self.filter_timer_hours = None      # interg representation
+        self.filter_timer_days = None       # interg representation
+        self.filter_timer = None            # String with all parameters
         self.search_device_id = None
         self.firmware_version = None
         self.firmware_date = None
@@ -83,6 +108,7 @@ class ResponsePacket(VentoExpertPacket):
         """
         try:
             self._data = data
+            # print(f"Initialize. Data: {self.__print_data(data)}")
             size = len(data)
             if size < 4 or not self.is_header_ok():
                 return False
@@ -122,50 +148,63 @@ class ResponsePacket(VentoExpertPacket):
         return txt
 
     def read_parameters(self) -> bool:
-        while self._pos < len(self._data) - 3:
+        # print(f"Read param. Data: {self.__print_data(self._data)}")
+        length_data = len(self._data)
+        while self._pos < (length_data - 3):
+            size = 1        # parameter size always one if it's not an extended parameter
             parameters = self.read_byte()
-            size = 1
-            if parameters == 0xFE:
-                # change parameter size
+
+            # Special handling of parameters that has more than one byte package
+            if parameters == parameter.SC_CHANGE_VALUE_SIZE:
+                # print(f"FE Parameter to be processed: {hex(parameters)}")
                 size = self.read_byte()
-                parameters = self.read_byte()
-            else:
-                if parameters not in self.parameter_size:
-                    return False
-                size = self.parameter_size[parameters]
-            if parameters == parameter.ON_OFF:
-                self.is_on = self._data[self._pos] != 0
-            elif parameters == parameter.SPEED:
-                self.speed = self._data[self._pos]
-            elif parameters == parameter.MANUAL_SPEED:
-                self.manualspeed = self._data[self._pos]
-            elif parameters == parameter.FAN1RPM:
-                self.fan1rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
-            elif parameters == parameter.CURRENT_HUMIDITY:
-                self.humidity = self._data[self._pos]
-            elif parameters == parameter.VENTILATION_MODE:
-                self.mode = self._data[self._pos]
-            elif parameters == parameter.READ_FIRMWARE_VERSION:
-                major = self._data[self._pos]
-                minor = self._data[self._pos + 1]
-                self.firmware_version = f"{major}.{minor}"
-                day = self._data[self._pos + 2]
-                month = self._data[self._pos + 3]
-                year = self._data[self._pos + 4] + (self._data[self._pos + 5] << 8)
-                self.firmware_date = f"{day}-{month}-{year}"
-            elif parameters == parameter.UNIT_TYPE:
-                self.unit_type = self._data[self._pos]
-            elif parameters == parameter.FILTER_ALARM:
-                self.filter_alarm = self._data[self._pos]
-            elif parameters == parameter.FILTER_TIMER:
-                self.filter_timer = (
-                    self._data[self._pos]
-                    + (self._data[self._pos + 2] * 24 + self._data[self._pos + 1]) * 60
-                )
-            elif parameters == parameter.SEARCH:
-                self.search_device_id = ""
-                for i in range(self._pos, self._pos + 16):
-                    self.search_device_id += chr(self._data[i])
+                parameters = self.read_byte()   # read the extended lenght parameter
+
+            # print(f"Parameter to be processed: {hex(parameters)}")
+            match parameters:
+                case parameter.ON_OFF:
+                    self.is_on = self._data[self._pos] != 0
+                case parameter.SPEED:
+                    self.speed = self._data[self._pos]
+                case parameter.MANUAL_SPEED:
+                    self.manualspeed = self._data[self._pos]
+                case parameter.FAN1RPM:
+                    self.fan1rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
+                case parameter.FAN2RPM:
+                    self.fan2rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
+                case parameter.CURRENT_HUMIDITY:
+                    self.humidity = self._data[self._pos]
+                case parameter.VENTILATION_MODE:
+                    self.mode = self._data[self._pos]
+                case parameter.READ_FIRMWARE_VERSION:
+                    major = self._data[self._pos]
+                    minor = self._data[self._pos + 1]
+                    self.firmware_version = f"{major}.{minor}"
+                    day = self._data[self._pos + 2]
+                    month = self._data[self._pos + 3]
+                    year = self._data[self._pos + 4] + (self._data[self._pos + 5] << 8)
+                    self.firmware_date = f"{day}-{month}-{year}"
+                case parameter.UNIT_TYPE:
+                    self.unit_type = self._data[self._pos]
+                case parameter.FILTER_ALARM:
+                    self.filter_alarm = self._data[self._pos]
+                case parameter.FILTER_TIMER:
+                    self.filter_timer_minutes = self._data[self._pos]
+                    self.filter_timer_hours = self._data[self._pos + 1]
+                    self.filter_timer_days = self._data[self._pos + 2]
+                    self.filter_timer = (str(self.filter_timer_days)+" days " +
+                                         str(self.filter_timer_hours)+" hours " +
+                                         str(self.filter_timer_minutes)+" minutes")
+                case parameter.SEARCH:
+                    self.search_device_id = ""
+                    for i in range(self._pos, self._pos + 16):
+                        self.search_device_id += chr(self._data[i])
+                case _:
+                    if parameters not in self.parameter_size:
+                        print(f"UNEXPECTE PARAMETER : {hex(parameters)}")
+                        return False
+                    size = self.parameter_size[parameters]
+
             self._pos += size
         if self.is_on is not None and not self.is_on:
             self.speed = Speed.OFF

@@ -3,7 +3,6 @@
 # You can see the device id in the respective mobile phone apps for the relvant supplier of the fans. Blauberg, Vents, Duka.
 
 import sys
-import time
 
 from VentoExpertSDK.ventoClient import VentoClient, Device, Mode
 # from VentoExpertSDK.device import Device, Mode
@@ -17,10 +16,13 @@ def onchange(device: Device):
         f" manualspeed: {device.manualspeed},"
         f" fan1rpm: {device.fan1rpm},"
         # f" fan2rpm: {device.fan2rpm},"
-        f" mode: {device.mode},"
+        f" mode: {device.mode}\n"
         f" humidity: {device.humidity},"
         f" filter alarm: {device.filter_alarm},"
-        f" filter timer; {device.filter_timer} minutes"
+        f" time to filter maintenance: {device.filter_timer}\n"
+        f" firmware version: {device.firmware_version},"
+        f" firmware date: {device.firmware_date},\n"
+        f" device ID: {device.device_id}"
     )
 
 
@@ -33,23 +35,24 @@ def main():
     fanClient: VentoClient = VentoClient()
     fanClient.search_devices(newdevice_callback)
     # print("\n Number of clients", fanClient.get_device_count())
-    time.sleep(5)
+    # time.sleep(5)
 
     # read the device id from file
     with open(".deviceid.txt", "r") as file:
         device_id = file.readline().replace("\n", "")
         print(f"Device Id read from file: {device_id}")
     # initialize the VentoClient and add the device
-    mydevice: Device = fanClient.validate_device(device_id, ip_address="192.168.29.255")
+    mydevice: Device = fanClient.validate_device(device_id, ip_address="192.168.29.210")
     if mydevice is None:
         print("Device does not respond")
     else:
         mydevice = fanClient.add_device(device_id, ip_address=mydevice.ip_address, onchange=onchange)
-        
+
         print("Device added")
         print(f"Firmware version: {mydevice.firmware_version}")
         print(f"Firmware date: {mydevice.firmware_date}")
         print(f"Unit type: {mydevice.unit_type}")
+        print(f"Number of devices: {fanClient.get_device_count()}")
         while True:
             print(
                 "Press one key and enter. "

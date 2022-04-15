@@ -6,9 +6,11 @@ import time
 
 from socket import SOL_SOCKET, SO_REUSEADDR, SO_BROADCAST
 
-from .device import Device, Mode, Speed
+from .device import Device, Mode
 from .ventoPacket import VentoExpertPacket
 from .responsepacket import ResponsePacket
+from VentoExpertSDK.source import speed
+
 
 
 class VentoClient:
@@ -25,6 +27,7 @@ class VentoClient:
         self._notifythread = threading.Thread(target=self.__notify_fn)
         self._notifythread.start()
         self._found_device_callback = None
+        self._speed = None
 
     def close(self):
         """Close the client and end the notify thread to end. Wait for the
@@ -75,14 +78,14 @@ class VentoClient:
         with VentoClient._mutex:
             self._sock.sendto(packet.data, ("<broadcast>", 4000))
 
-    def set_speed(self, device: Device, speed: Speed):
+    def set_speed(self, device: Device, speed: speed):
         """Set the speed of the specified device"""
         if device.speed == speed:
             return
-        if speed == Speed.OFF:
+        if speed == speed.OFF:
             self.turn_off(device)
             return
-        if device.speed == Speed.OFF:
+        if device.speed == speed.OFF:
             self.turn_on(device)
             time.sleep(0.2)
 
@@ -93,8 +96,8 @@ class VentoClient:
 
     def set_manual_speed(self, device: Device, manualspeed: int):
         """Set the manual speed of the specified device"""
-        if device.speed != Speed.MANUAL:
-            self.set_speed(device, Speed.MANUAL)
+        if device.speed != speed.MANUAL:
+            self.set_speed(device, speed.MANUAL)
             time.sleep(0.2)
 
         packet = VentoExpertPacket()
@@ -104,7 +107,7 @@ class VentoClient:
 
     def turn_off(self, device: Device):
         """Turn off the specified device"""
-        if device.speed == Speed.OFF:
+        if device.speed == speed.OFF:
             return
         packet = VentoExpertPacket()
         packet.initialize_off_cmd(device)
@@ -113,7 +116,7 @@ class VentoClient:
 
     def turn_on(self, device: Device):
         """Turn on the specified device"""
-        if device.speed != Speed.OFF:
+        if device.speed != speed.OFF:
             return
         packet = VentoExpertPacket()
         packet.initialize_on_cmd(device)
@@ -277,7 +280,7 @@ class VentoClient:
         return (None, None)
 
     def update_device(self, device, ip_address: str, packet: ResponsePacket):
-        """Update the device with data recieved. Called by the dukaclient"""
+        """Update the device with data recieved. Called by the ventoClient"""
         haschange = False
         if device._ip_address is not None and ip_address != device._ip_address:
             self._ip_address = ip_address
@@ -291,18 +294,21 @@ class VentoClient:
         if packet.mode is not None and packet.mode != device._mode:
             device._mode = packet.mode
             haschange = True
+
         if (
             packet.filter_alarm is not None
             and packet.filter_alarm != device._filter_alarm
         ):
             device._filter_alarm = packet.filter_alarm
             haschange = True
+
         if (
             packet.filter_timer is not None
             and packet.filter_timer != device._filter_timer
         ):
             device._filter_timer = packet.filter_timer
             haschange = True
+
         if packet.humidity is not None and packet.humidity != device._humidity:
             device._humidity = packet.humidity
             haschange = True
@@ -312,10 +318,13 @@ class VentoClient:
             device._firmware_date = packet.firmware_date
         if packet.unit_type is not None:
             device._unit_type = packet.unit_type
+        if packet.fan1rpm is not None:
+            device._fan1rpm = packet.fan1rpm
+        if packet.fan2rpm is not None:
+            device._fan2rpm = packet.fan2rpm
         if haschange and device._changeevent is not None:
             device._changeevent(device)
         # note we do not want the fan rpm to trigger change event because it
         # changes all the time
-        if packet.fan1rpm is not None and packet.fan1rpm != device._fan1rpm:
-            device._fan1rpm = packet.fan1rpm
+
         return

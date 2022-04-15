@@ -1,6 +1,6 @@
 # Introduction
 
-This is a Python module for making a connection to a Blauberg Vento Expert room ventilationsystem with a heat exchanger. Developer documentation is here[here](
+This is a Python module for making a connection to a Blauberg Vento Expert room ventilationsystem with a heat exchanger. Developer documentation is [here](
 https://blaubergventilatoren.de/uploads/download/b133_4_1en_01preview.pdf). 
 
 This SDK is forked from forked from dingusdk/dukaonesdk and is heavily based upon the work there.

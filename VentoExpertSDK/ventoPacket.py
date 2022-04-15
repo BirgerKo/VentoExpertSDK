@@ -2,7 +2,7 @@
 from VentoExpertSDK.source import parameter, function
 from .device import Device
 from .mode import Mode
-from .speed import Speed
+from VentoExpertSDK.source import speed
 
 
 class VentoExpertPacket:
@@ -21,7 +21,7 @@ class VentoExpertPacket:
         self.__add_byte(parameter.SEARCH)
         self.__add_checksum()
 
-    def initialize_speed_cmd(self, device: Device, speed: Speed):
+    def initialize_speed_cmd(self, device: Device, speed: speed):
         """Initialize a speed command packet to be sent to a device"""
         self.__build_data(device.device_id, device.password)
         self.__add_byte(function.WRITEREAD)

@@ -1,12 +1,16 @@
-"""Blauberg protocol Parameters constant library
-Kept in a separate file to have this readable notation Parameter.RELAY_SENSOR """
+"""Blauberg protocol Parameters constant library.
+Kept in a separate file to have this readable notation. """
 
+PROTOCOL_TYPE = 0x02          # protocol type (1 byte). Value = 0x02
+PACKET_START_CHARACTER = 0xFD       # Packet beginning character. Shall be repeated in 2 following bytes for each packet. 0xFD,0xFD
+
+
+# Parameter values
 ON_OFF = 0x01                 # R/W/RW          0 — Off,1 — On, 2 – Invert
 SPEED = 0x02                  # R/W/RW/INC/DEC  1 – Speed 1, 2 – Speed 2, 3 – Speed 3, 255 – manual speed setting mode (see parameter 68)
-PROTOCOL_TYPE = 0x02          # protocol type (1 byte). Value = 0x02
 BOOST_MODE_STATUS = 0x06      # R               0 – Off,1 – On
 TIMER_MODE = 0x07             # R/W/RW/INC/DEC  0 – Off, 1 – Night mode, 2 – "Party" mode
-TIMER_MODE_COUNTDOWN = 0x0B   # R               Byte 1 – seconds (0…59), Byte 2 – minutes (0…59), Byte 3 – hours (0…23)
+TIMER_COUNTDOWN = 0x0B        # R               Byte 1 – seconds (0…59), Byte 2 – minutes (0…59), Byte 3 – hours (0…23). Countdown for current mode
 HUMIDITY_SENSOR = 0x0F        # R/W/RW          0 — Off,1 — On, 2 – Invert
 RELAY_SENSOR = 0x14           # R/W/RW          0 — Off,1 — On, 2 – Invert
 ZERO_10V_SENSOR = 0x16        # R/W/RW          0 — Off,1 — On, 2 – Invert
@@ -17,7 +21,7 @@ CURRENT_ZERO_10V_SENSOR_VALUE = 0x2D    # R     0…100 %
 CURRENT_REALY_SENSOR_STATE = 0x32       # R     0 – Off,1 – On
 MANUAL_SPEED = 0x44           # R/W/RW/INC/DEC  0…255
 FAN1RPM = 0x4A                # R               0…5000 rpm
-FAN2RPM = 0x4A                # R               0…5000 rpm
+FAN2RPM = 0x4B                # R               0…5000 rpm
 FILTER_TIMER = 0x64           # R               Timer countdown to filter replacement. Byte 1 –minutes(0…59), Byte 2 –hours(0…23), Byte 3 –days(0…181)
 RESET_FILTER_TIMER = 0x65     # W               Reset timer countdown to filter replacement, Any byte
 BOST_MODE_DEACTIVATION_SETPOINT = 0x66  # R/W/RW/INC/DEC        0…60 minutes
@@ -48,16 +52,15 @@ ASSIGNED_IP_GATEWAY = 0x9E      # R/W/RW        Byte 1 – 0…255, Byte 2 – 0
 APPLY_QUIT_SETUP_MODE = 0xA0    # W             Apply new Wi-Fi parameters and quit Setup Mode.      Any byte
 DISCARD_QUIT_SETUP_MODE = 0xA2  # W             Discard new Wi-Fi parameters and quit Setup Mode.    Any byte
 CURRENT_IP_ADDRESS = 0xA3       # R             Byte 1 – 0…255, Byte 2 – 0…255, Byte 3 – 0…255, Byte 4 – 0…255
-VENTILATION_MODE = 0xB7       # R/W/RW/INC/DEC    0 – ventilation, 1 – heat recovery, 2 – supply
-UNIT_TYPE = 0xB9              # R                 3: Vento Expert A50-1 W V.2, Vento Expert A85-1 W V.2, Vento Expert A100-1 W V.2,
+VENTILATION_MODE = 0xB7       # R/W/RW/INC/DEC  0 – ventilation, 1 – heat recovery, 2 – supply
+UNIT_TYPE = 0xB9              # R               3: Vento Expert A50-1 W V.2, Vento Expert A85-1 W V.2, Vento Expert A100-1 W V.2,
 #                                               4: Vento Expert Duo A30-1 W V.2, 5: Vento Expert A30 W V.2
 SC_CHANGE_FUNCTION_NUMBER = 0XFC    # Change function (FUNC) number. The following byte must be the new function number ranging from 0x01 to 0x05.
 # This Special Command is used to organise several functions with different actions into a single packet.
-PACKET_START_CHARACTER = 0xFD        # Packet beginning character. Shall be repeated in 2 following bytes for each packet. 0xFD,0xFD
 SC_PARAMETER_NOT_SUPPORTED = 0xFD   # Parameter not supported by the controller. The following byte is the low byte of the non-supported
 # parameter. This Special Command is used in controller response (FUNC = 0x06) to a non-supported parameter read or write request.
 SC_CHANGE_VALUE_SIZE = 0xFE         # Change a size of the Value for one parameter which follows. The following byte must be the new parameter
-# size followed by the low byte of the parameter number, and then – by the Value itself
+#                                     size followed by the low byte of the parameter number, and then – by the Value itself
 SC_CHANGE_HIGH_BYTE = 0xFF          # Change the high byte for parameter numbers within a single packet. The following byte must be the new high byte.
 NIGHT_MODE_TIMER_SETPOINT = 0x302   # R/W/RW    Byte 1 – minutes (0…59), Byte 2 – hours (0…23)
 PARTY_MODE_TIMER_SETPOINT = 0x303   # R/W/RW    Byte 1 – minutes (0…59), Byte 2 – hours (0…23)

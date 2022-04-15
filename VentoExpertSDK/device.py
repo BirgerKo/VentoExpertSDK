@@ -1,7 +1,7 @@
 """Implements the Blauberg Vento Expert device class """
 import time
 from .mode import Mode
-from .speed import Speed
+from VentoExpertSDK.source import speed
 
 
 class Device:
@@ -17,7 +17,7 @@ class Device:
         self._id = deviceid
         self._password = password
         self._ip_address = ip_address
-        self._speed: Speed = None
+        self._speed = None
         self._mode: Mode = None
         self._manualspeed: int = None
         self._fan1rpm: int = None
@@ -47,7 +47,7 @@ class Device:
         return self._ip_address
 
     @property
-    def speed(self) -> Speed:
+    def speed(self) -> int:
         """Return the speed of the device"""
         return self._speed
 
