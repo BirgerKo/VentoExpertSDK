@@ -2,7 +2,6 @@
 # This file should contain the device id.
 # You can see the device id in the respective mobile phone apps for the relvant supplier of the fans. Blauberg, Vents, Duka.
 
-from ipaddress import ip_address
 import sys
 import time
 
@@ -10,6 +9,7 @@ from VentoExpertSDK.ventoClient import VentoClient, Device, Mode
 # from VentoExpertSDK.device import Device, Mode
 
 deviceAdressList = []
+
 
 def onchange(device: Device):
     # Callback function when device changes
@@ -35,20 +35,22 @@ def newdevice_callback(deviceid: str, ip_addr: str):
     if not deviceAdressList:
         deviceAdressList.append(dataPair)
     else:
-        for i in range(0,len(deviceAdressList)):
+        for i in range(0, len(deviceAdressList)):
             # deviceToCompare = deviceAdressList[i]
-            if  deviceAdressList[i][0] == deviceid:
+            if deviceAdressList[i][0] == deviceid:
                 duplicateDevice = True
-                print("Duplicate found ",i, deviceid)
+                print("Duplicate found ", i, deviceid)
                 continue
 
         if not duplicateDevice:
             deviceAdressList.append(dataPair)
 
+
 def discoveredFans():
     print("Press number keys to selct fan device :")
-    for i in range(0,len(deviceAdressList)):
+    for i in range(0, len(deviceAdressList)):
         print(i+1, " :  Device = ", deviceAdressList[i][0], ", IP = ", deviceAdressList[i][1])
+
 
 def main():
     # Main
