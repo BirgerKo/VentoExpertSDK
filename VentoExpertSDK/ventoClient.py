@@ -12,7 +12,6 @@ from .responsepacket import ResponsePacket
 from VentoExpertSDK.source import speed
 
 
-
 class VentoClient:
     """ Client object for making connection to the Blauberg Vento Expert devices """
 
@@ -251,7 +250,7 @@ class VentoClient:
                         packet.search_device_id is not None
                         and self._found_device_callback is not None
                     ):
-                        self._found_device_callback(packet.search_device_id)
+                        self._found_device_callback(packet.search_device_id, addr[0])
                     continue
                 device: Device = self._devices[packet.device_id]
                 ip_address = addr[0]

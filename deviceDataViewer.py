@@ -2,12 +2,14 @@
 # This file should contain the device id.
 # You can see the device id in the respective mobile phone apps for the relvant supplier of the fans. Blauberg, Vents, Duka.
 
+from ipaddress import ip_address
 import sys
 import time
 
 from VentoExpertSDK.ventoClient import VentoClient, Device, Mode
 # from VentoExpertSDK.device import Device, Mode
 
+deviceAdressList = []
 
 def onchange(device: Device):
     # Callback function when device changes
@@ -27,26 +29,57 @@ def onchange(device: Device):
     )
 
 
-def newdevice_callback(deviceid: str):
-    print("New device id: " + deviceid)
+def newdevice_callback(deviceid: str, ip_addr: str):
+    duplicateDevice = False
+    dataPair = (deviceid, ip_addr)
+    if not deviceAdressList:
+        deviceAdressList.append(dataPair)
+    else:
+        for i in range(0,len(deviceAdressList)):
+            # deviceToCompare = deviceAdressList[i]
+            if  deviceAdressList[i][0] == deviceid:
+                duplicateDevice = True
+                print("Duplicate found ",i, deviceid)
+                continue
 
+        if not duplicateDevice:
+            deviceAdressList.append(dataPair)
+
+def discoveredFans():
+    print("Press number keys to selct fan device :")
+    for i in range(0,len(deviceAdressList)):
+        print(i+1, " :  Device = ", deviceAdressList[i][0], ", IP = ", deviceAdressList[i][1])
 
 def main():
-    # Main example
+    # Main
     fanClient: VentoClient = VentoClient()
     fanClient.search_devices(newdevice_callback)
-    print("3")
-    time.sleep(1)       # Give fans time to respond to the search command
-    print("2")
-    time.sleep(1)
-    print("1")
+    time.sleep(3)       # Give fans time to respond to the search command
 
-    # read the device id from fileq
+    """
+    # read the device id from file
     with open(".deviceid.txt", "r") as file:
         device_id = file.readline().replace("\n", "")
         print(f"Device Id read from file: {device_id}")
-    # initialize the VentoClient and add the device
-    mydevice: Device = fanClient.validate_device(device_id, ip_address="192.168.29.210")
+    """
+    discoveredFans()
+
+    while True:
+        print(
+            "Press one key and enter. "
+            "1-6 to select cooresonding device above"
+            "q = quit selection process"
+        )
+        char = sys.stdin.read(2)[0]
+        if char == "q":
+            break
+        if char >= "1" and char <= "6":
+            device_id = deviceAdressList[int(char)-1][0]
+            ip_address = deviceAdressList[int(char)-1][1]
+            break
+
+    # initialize the VentoClient and add the device(s)
+    mydevice: Device = fanClient.validate_device(device_id, ip_address)
     if mydevice is None:
         print("Device does not respond")
     else:
