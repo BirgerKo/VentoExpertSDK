@@ -1,7 +1,6 @@
 """Implements the Blauberg Vento Expert device class """
 import time
 from .mode import Mode
-from VentoExpertSDK.source import speed
 
 
 class Device:
@@ -28,6 +27,9 @@ class Device:
         self._firmware_version = None
         self._firmware_date = None
         self._unit_type = None
+        self.fan_rtc_date = None
+        self.fan_rtc_time = None
+        self.rtc_battery_voltage = None
 
     @property
     def device_id(self) -> str:
@@ -97,7 +99,6 @@ class Device:
 
     def is_initialized(self):
         """Returns True if the device has initilized.
-
         The device is initialize once the get initial get firmware packet has been received.
         This packet is send when the device is added to the client
         """

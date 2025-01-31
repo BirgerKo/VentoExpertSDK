@@ -1,4 +1,4 @@
-# Implements a client for making a udp connection to the Blauberg Vento Expert devices
+# Implements a client for making a UDP connection to the Blauberg Vento Expert devices
 
 import socket
 import threading
@@ -9,7 +9,7 @@ from socket import SOL_SOCKET, SO_REUSEADDR, SO_BROADCAST
 from .device import Device, Mode
 from .ventoPacket import VentoExpertPacket
 from .responsepacket import ResponsePacket
-from VentoExpertSDK.source import speed
+from VentoExpertSDK import ventoProtocol as protocol
 
 
 class VentoClient:
@@ -77,14 +77,14 @@ class VentoClient:
         with VentoClient._mutex:
             self._sock.sendto(packet.data, ("<broadcast>", 4000))
 
-    def set_speed(self, device: Device, speed: speed):
+    def set_speed(self, device: Device, speed: int):
         """Set the speed of the specified device"""
         if device.speed == speed:
             return
-        if speed == speed.OFF:
+        if speed == protocol.SPEED_OFF:
             self.turn_off(device)
             return
-        if device.speed == speed.OFF:
+        if device.speed == protocol.SPEED_OFF:
             self.turn_on(device)
             time.sleep(0.2)
 
@@ -95,8 +95,8 @@ class VentoClient:
 
     def set_manual_speed(self, device: Device, manualspeed: int):
         """Set the manual speed of the specified device"""
-        if device.speed != speed.MANUAL:
-            self.set_speed(device, speed.MANUAL)
+        if device.speed != protocol.MANUAL:
+            self.set_speed(device, protocol.MANUAL)
             time.sleep(0.2)
 
         packet = VentoExpertPacket()
@@ -106,7 +106,7 @@ class VentoClient:
 
     def turn_off(self, device: Device):
         """Turn off the specified device"""
-        if device.speed == speed.OFF:
+        if device.speed == protocol.SPEED_OFF:
             return
         packet = VentoExpertPacket()
         packet.initialize_off_cmd(device)
@@ -115,7 +115,7 @@ class VentoClient:
 
     def turn_on(self, device: Device):
         """Turn on the specified device"""
-        if device.speed != speed.OFF:
+        if device.speed != protocol.SPEED_OFF:
             return
         packet = VentoExpertPacket()
         packet.initialize_on_cmd(device)

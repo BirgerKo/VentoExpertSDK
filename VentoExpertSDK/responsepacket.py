@@ -1,72 +1,77 @@
 # Implements a class for the UDP data packet
 from .mode import Mode
 from .ventoPacket import VentoExpertPacket
-from VentoExpertSDK.source import function
-from VentoExpertSDK.source import parameter
-from VentoExpertSDK.source import speed
+from VentoExpertSDK import ventoProtocol as protocol
 import traceback
 
 
 class ResponsePacket(VentoExpertPacket):
-    # A udp data packet from the device
+    # A UDP data packet from the device
 
     parameter_size = {
-        # see parmeter.py for documentation to avoid duplicates here
-        # see Blauberg doc for packet lenghts documentation
-        parameter.ON_OFF: 1,
-        parameter.SPEED: 1,
-        parameter.BOOST_MODE_STATUS: 1,
-        parameter.TIMER_MODE: 1,
-        parameter.TIMER_COUNTDOWN: 3,
-        parameter.HUMIDITY_SENSOR: 1,
-        parameter.RELAY_SENSOR: 1,
-        parameter.ZERO_10V_SENSOR: 1,
-        parameter.HUMIDITY_THRESHOLD_SETPOINT: 1,
-        parameter.CURRENT_RTC_BATTERY_VOLTAGE: 2,
-        parameter.CURRENT_HUMIDITY: 1,
-        parameter.CURRENT_ZERO_10V_SENSOR_VALUE: 1,
-        parameter.CURRENT_REALY_SENSOR_STATE: 1,
-        parameter.MANUAL_SPEED: 1,
-        parameter.FAN1RPM: 2,
-        parameter.FAN2RPM: 2,
-        parameter.FILTER_TIMER: 3,
-        parameter.RESET_FILTER_TIMER: 1,
-        parameter.BOST_MODE_DEACTIVATION_SETPOINT: 1,
-        parameter.RTC_TIMER: 3,
-        parameter.RTC_CALENDAR: 4,
-        parameter.WEEKLY_SCHEDULE_MODE: 1,
-        parameter.SCHEDULE_SETUP: 6,
-        parameter.SEARCH: 16,
-        parameter.DEVICE_PASSWORD: 0,
-        parameter.MACHINE_HOURS: 4,
-        parameter.RESET_ALARMS: 1,
-        parameter.READ_ALARM: 1,
-        parameter.CLOUD_OPERATION: 1,
-        parameter.READ_FIRMWARE_VERSION: 6,
-        parameter.RESTORE_FACTORY_SETTINGS: 1,
-        parameter.FILTER_ALARM: 1,
-        parameter.WIFI_OPERATION_MODE: 1,
-        parameter.WIFI_CLIENT_NAME: 0,
-        parameter.WIFI_PASSWORD: 0,
-        parameter.WIFI_ENCRYPTION: 1,
-        parameter.WIFI_CHANNEL: 1,
-        parameter.WIFI_IP_MODE: 1,
-        parameter.ASSIGNED_IP_ADDRESS: 4,
-        parameter.ASSIGNED_IP_SUBNET_MASK: 4,
-        parameter.ASSIGNED_IP_GATEWAY: 4,
-        parameter.APPLY_QUIT_SETUP_MODE: 1,
-        parameter.DISCARD_QUIT_SETUP_MODE: 1,
-        parameter.CURRENT_IP_ADDRESS: 4,
-        parameter.VENTILATION_MODE: 1,
-        parameter.UNIT_TYPE: 2,
-        parameter.SC_CHANGE_FUNCTION_NUMBER: 1,  # Just dummy so all are in the list. Length will vary.
-        parameter.SC_PARAMETER_NOT_SUPPORTED: 1,
-        parameter.SC_CHANGE_VALUE_SIZE: 1,       # Just dummy so all are in the list. Length will vary.
-        parameter.SC_CHANGE_HIGH_BYTE: 1,
-        parameter.NIGHT_MODE_TIMER_SETPOINT: 3,
-        parameter.PARTY_MODE_TIMER_SETPOINT: 3,
-        parameter.HUMIDITY_SETPOINT_STATUS: 1,
-        parameter.ZERO_10V_SENSOR_STATUS: 1,
+        # see ventoProtocol.py for documentation to avoid duplicates here
+        # see Blauberg doc for packet lenghts and other detailed documentation
+        protocol.ON_OFF: 1,
+        protocol.SPEED: 1,
+        protocol.BOOST_MODE_STATUS: 1,
+        protocol.TIMER_MODE: 1,
+        protocol.TIMER_COUNTDOWN: 3,
+        protocol.HUMIDITY_SENSOR: 1,
+        protocol.RELAY_SENSOR: 1,
+        protocol.ZERO_10V_SENSOR: 1,
+        protocol.HUMIDITY_THRESHOLD_SETPOINT: 1,
+        protocol.CURRENT_RTC_BATTERY_VOLTAGE: 2,
+        protocol.CURRENT_HUMIDITY: 1,
+        protocol.CURRENT_ZERO_10V_SENSOR_VALUE: 1,
+        protocol.CURRENT_REALY_SENSOR_STATE: 1,
+        protocol.SUPPLY_FAN_SPEED1: 1,
+        protocol.EXHAUST_FAN_SPEED1: 1,
+        protocol.SUPPLY_FAN_SPEED2: 1,
+        protocol.EXHAUST_FAN_SPEED2: 1,
+        protocol.SUPPLY_FAN_SPEED3: 1,
+        protocol.EXHAUST_FAN_SPEED3: 1,
+        protocol.MANUAL_SPEED: 1,
+        protocol.FAN1RPM: 2,
+        protocol.FAN2RPM: 2,
+        protocol.FILTER_REPLACEMENT_TIME: 2,
+        protocol.FILTER_TIMER: 3,
+        protocol.RESET_FILTER_TIMER: 1,
+        protocol.BOST_MODE_DEACTIVATION_SETPOINT: 1,
+        protocol.RTC_TIME: 3,
+        protocol.RTC_CALENDAR: 4,
+        protocol.WEEKLY_SCHEDULE_MODE: 1,
+        protocol.SCHEDULE_SETUP: 6,
+        protocol.SEARCH: 16,
+        protocol.DEVICE_PASSWORD: 0,
+        protocol.MACHINE_HOURS: 4,
+        protocol.RESET_ALARMS: 1,
+        protocol.READ_ALARM: 1,
+        protocol.CLOUD_OPERATION: 1,
+        protocol.READ_FIRMWARE_VERSION: 6,
+        protocol.RESTORE_FACTORY_SETTINGS: 1,
+        protocol.FILTER_ALARM: 1,
+        protocol.WIFI_OPERATION_MODE: 1,
+        protocol.WIFI_CLIENT_NAME: 0,
+        protocol.WIFI_PASSWORD: 0,
+        protocol.WIFI_ENCRYPTION: 1,
+        protocol.WIFI_CHANNEL: 1,
+        protocol.WIFI_IP_MODE: 1,
+        protocol.ASSIGNED_IP_ADDRESS: 4,
+        protocol.ASSIGNED_IP_SUBNET_MASK: 4,
+        protocol.ASSIGNED_IP_GATEWAY: 4,
+        protocol.APPLY_QUIT_SETUP_MODE: 1,
+        protocol.DISCARD_QUIT_SETUP_MODE: 1,
+        protocol.CURRENT_IP_ADDRESS: 4,
+        protocol.VENTILATION_MODE: 1,
+        protocol.UNIT_TYPE: 2,
+        protocol.SC_CHANGE_FUNCTION_NUMBER: 1,  # Just dummy so all are in the list. Length will vary.
+        protocol.SC_PARAMETER_NOT_SUPPORTED: 1,
+        protocol.SC_CHANGE_VALUE_SIZE: 1,       # Just dummy so all are in the list. Length will vary.
+        protocol.SC_CHANGE_HIGH_BYTE: 1,
+        protocol.NIGHT_MODE_TIMER_SETPOINT: 3,
+        protocol.PARTY_MODE_TIMER_SETPOINT: 3,
+        protocol.HUMIDITY_SETPOINT_STATUS: 1,
+        protocol.ZERO_10V_SENSOR_STATUS: 1,
     }
 
     def __print_data(self, data):
@@ -78,7 +83,7 @@ class ResponsePacket(VentoExpertPacket):
         self.device_id = None
         self.device_password = None
         self.is_on = None
-        self.speed: Speed = None
+        self.speed = None
         self.boostModeStatus = None
         self.timerMode = None
         self.timerCountdown = None
@@ -101,9 +106,11 @@ class ResponsePacket(VentoExpertPacket):
         self.firmware_version = None
         self.firmware_date = None
         self.unit_type = None
+        self.fan_rtc_date = None
+        self.fan_rtc_time = None
 
     def initialize_from_data(self, data) -> bool:
-        """Initialize a packet from data revieved from the device
+        """Initialize a packet from data received from the device
         Returns False if the data is invalid
         """
         try:
@@ -119,7 +126,7 @@ class ResponsePacket(VentoExpertPacket):
             self.device_id = self.read_string()
             self.device_password = self.read_string()
             func = self.read_byte()
-            if func != function.RESPONSE:
+            if func != protocol.RESPONSE:
                 # The search command sent out to "DEFAULT_DEVICEID" will be read here as it goes out as a broadcast and is received with type READ.
                 # That is not a fault.
                 return False
@@ -155,28 +162,32 @@ class ResponsePacket(VentoExpertPacket):
             parameters = self.read_byte()
 
             # Special handling of parameters that has more than one byte package
-            if parameters == parameter.SC_CHANGE_VALUE_SIZE:
+            if parameters == protocol.SC_CHANGE_VALUE_SIZE:
                 # print(f"FE Parameter to be processed: {hex(parameters)}")
                 size = self.read_byte()
                 parameters = self.read_byte()   # read the extended lenght parameter
 
             # print(f"Parameter to be processed: {hex(parameters)}")
+            ''' The cases are not in alphabetical order, but the same oreder as in the Blauberg Vento protocol desription 
+            for parameteres to make it easier to find the parameter in the list '''
             match parameters:
-                case parameter.ON_OFF:
+                case protocol.ON_OFF:
                     self.is_on = self._data[self._pos] != 0
-                case parameter.SPEED:
+                case protocol.SPEED:
                     self.speed = self._data[self._pos]
-                case parameter.MANUAL_SPEED:
-                    self.manualspeed = self._data[self._pos]
-                case parameter.FAN1RPM:
-                    self.fan1rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
-                case parameter.FAN2RPM:
-                    self.fan2rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
-                case parameter.CURRENT_HUMIDITY:
+                case protocol.CURRENT_RTC_BATTERY_VOLTAGE:
+                    self.rtcBatteryVoltage = self._data[self._pos]
+                case protocol.CURRENT_HUMIDITY:
                     self.humidity = self._data[self._pos]
-                case parameter.VENTILATION_MODE:
+                case protocol.MANUAL_SPEED:
+                    self.manualspeed = self._data[self._pos]
+                case protocol.FAN1RPM:
+                    self.fan1rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
+                case protocol.FAN2RPM:
+                    self.fan2rpm = self._data[self._pos] + (self._data[self._pos + 1] << 8)
+                case protocol.VENTILATION_MODE:
                     self.mode = self._data[self._pos]
-                case parameter.READ_FIRMWARE_VERSION:
+                case protocol.READ_FIRMWARE_VERSION:
                     major = self._data[self._pos]
                     minor = self._data[self._pos + 1]
                     self.firmware_version = f"{major}.{minor}"
@@ -184,18 +195,18 @@ class ResponsePacket(VentoExpertPacket):
                     month = self._data[self._pos + 3]
                     year = self._data[self._pos + 4] + (self._data[self._pos + 5] << 8)
                     self.firmware_date = f"{day}-{month}-{year}"
-                case parameter.UNIT_TYPE:
+                case protocol.UNIT_TYPE:
                     self.unit_type = self._data[self._pos]
-                case parameter.FILTER_ALARM:
+                case protocol.FILTER_ALARM:
                     self.filter_alarm = self._data[self._pos]
-                case parameter.FILTER_TIMER:
+                case protocol.FILTER_TIMER:
                     self.filter_timer_minutes = self._data[self._pos]
                     self.filter_timer_hours = self._data[self._pos + 1]
                     self.filter_timer_days = self._data[self._pos + 2]
                     self.filter_timer = (str(self.filter_timer_days)+" days " +
                                          str(self.filter_timer_hours)+" hours " +
                                          str(self.filter_timer_minutes)+" minutes")
-                case parameter.SEARCH:
+                case protocol.SEARCH:
                     self.search_device_id = ""
                     for i in range(self._pos, self._pos + 16):
                         self.search_device_id += chr(self._data[i])
@@ -207,6 +218,6 @@ class ResponsePacket(VentoExpertPacket):
 
             self._pos += size
         if self.is_on is not None and not self.is_on:
-            self.speed = Speed.OFF
+            self.speed = protocol.SPEED_OFF
 
         return True

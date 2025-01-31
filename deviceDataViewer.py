@@ -1,31 +1,27 @@
-# Create a file called ".deviceid" in the current folder.
-# This file should contain the device id.
-# You can see the device id in the respective mobile phone apps for the relvant supplier of the fans. Blauberg, Vents, Duka.
-
+# This program can view trhe data from the Blauberg Vento compatible fans on the networ. Blauberg, Vents, Duka.
 import sys
 import time
-
 from VentoExpertSDK.ventoClient import VentoClient, Device, Mode
-# from VentoExpertSDK.device import Device, Mode
 
 deviceAdressList = []
 
 
 def onchange(device: Device):
     # Callback function when device changes
-    print(
-        f"ip: {device.ip_address}"
-        f" speed: {device.speed},"
-        f" manualspeed: {device.manualspeed},"
-        f" fan1rpm: {device.fan1rpm},"
+    print("Device changed\n"
+        f"ip: {device.ip_address}\n"
+        f" unit type: {device.unit_type}\n"
+        f" speed: {device.speed}\n"        
+        f" manualspeed: {device.manualspeed}\n"
+        f" fan1rpm: {device.fan1rpm}\n"
         # f" fan2rpm: {device.fan2rpm},"
         f" mode: {device.mode}\n"
-        f" humidity: {device.humidity},"
-        f" filter alarm: {device.filter_alarm},"
+        f" humidity: {device.humidity}\n"
+        f" filter alarm: {device.filter_alarm}\n"
         f" time to filter maintenance: {device.filter_timer}\n"
         f" firmware version: {device.firmware_version},"
         f" firmware date: {device.firmware_date},\n"
-        f" device ID: {device.device_id}"
+        f" device ID: {device.device_id}\n"
     )
 
 
@@ -46,10 +42,19 @@ def newdevice_callback(deviceid: str, ip_addr: str):
             deviceAdressList.append(dataPair)
 
 
-def discoveredFans():
+def showDiscoveredFans():
     print("Press number keys to selct fan device :")
     for i in range(0, len(deviceAdressList)):
         print(i+1, " :  Device = ", deviceAdressList[i][0], ", IP = ", deviceAdressList[i][1])
+
+
+def shutdown(fanClient = None):
+    if fanClient is not None:
+        print("Closing")
+        fanClient.close()
+    print("Done")
+
+    exit(0)
 
 
 def main():
@@ -58,22 +63,17 @@ def main():
     fanClient.search_devices(newdevice_callback)
     time.sleep(3)       # Give fans time to respond to the search command
 
-    """
-    # read the device id from file
-    with open(".deviceid.txt", "r") as file:
-        device_id = file.readline().replace("\n", "")
-        print(f"Device Id read from file: {device_id}")
-    """
-    discoveredFans()
+    showDiscoveredFans()
 
     while True:
         print(
-            "Press one key and enter. "
-            "1-6 to select cooresonding device above"
-            "q = quit selection process"
+            "Press one key and enter.\n"
+            "1-6 to select cooresonding device above\n"
+            "q = quit selection process\n"
         )
         char = sys.stdin.read(2)[0]
         if char == "q":
+            shutdown()
             break
         if char >= "1" and char <= "6":
             device_id = deviceAdressList[int(char)-1][0]
@@ -81,7 +81,8 @@ def main():
             break
 
     # initialize the VentoClient and add the device(s)
-    mydevice: Device = fanClient.validate_device(device_id, ip_address)
+    # validate_device(self, device_id: str, password: str = None, ip_address: str = "<broadcast>") -> Device:
+    mydevice: Device = fanClient.validate_device(device_id, ip_address=ip_address)
     if mydevice is None:
         print("Device does not respond")
     else:
@@ -91,12 +92,14 @@ def main():
         print(f"Firmware version: {mydevice.firmware_version}")
         print(f"Firmware date: {mydevice.firmware_date}")
         print(f"Unit type: {mydevice.unit_type}")
-        print(f"Number of devices: {fanClient.get_device_count()}")
+        print(f"Number of devices: {fanClient.get_device_count()}\n")
         while True:
             print(
-                "Press one key and enter. "
-                "1-3 for speed, 0=off, 9=on,b,n,m for mode,"
-                " f for reset filter alarm, q for quit"
+                "Press one key and enter.\n"
+                "1-3 for speed, 0=off 9=on\n"
+                "b,n,m for mode\n"
+                "f for reset filter alarm\n"
+                "q for quit\n"
             )
             char = sys.stdin.read(2)[0]
             if char == "q":
@@ -116,12 +119,6 @@ def main():
                 fanClient.set_mode(mydevice, Mode.IN)
             if char == "f":
                 fanClient.reset_filter_alarm(mydevice)
-
-    print("Closing")
-    fanClient.close()
-    print("Done")
-
-    exit(0)
-
+    shutdown(fanClient)
 
 main()

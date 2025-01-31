@@ -24,9 +24,10 @@ This blog http://www.dingus.dk/ has  good information.
 
 ## Other compatible devices
 
-There are several one "bands" of the duka one ventilator.
+There are several  of the ventilators.
 * Blauberg Vento
 * Siku With several models.
+* Duka One
 
 These should also work - I don't know which one is the orginal manufacture. Both Blauberg and Siku has documentation for the interface.
 

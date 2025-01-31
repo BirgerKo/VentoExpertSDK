@@ -3,7 +3,7 @@ from enum import IntEnum
 
 class Mode(IntEnum):
     """Device modes available
-    Note: The ONEWAY derection is decided by the dip switch on the device
+    Note: The ONEWAY direction is decided by the dip switch on the device
     """
 
     ONEWAY = 0

@@ -1,12 +1,12 @@
 # Implements a class for the UDP data packet
-from VentoExpertSDK.source import parameter, function
 from .device import Device
 from .mode import Mode
-from VentoExpertSDK.source import speed
+
+from VentoExpertSDK import ventoProtocol as protocol
 
 
 class VentoExpertPacket:
-    """ building the udp data packet to/from the device
+    """ building the UDP data packet to/from the device
     Packet: 0xFD 0xFD TYPE SIZE_ID ID SIZE PWD PWD FUNC DATA(parameter or parameter-value) Chksum_L Chksum_H"""
 
     def __init__(self):
@@ -17,15 +17,15 @@ class VentoExpertPacket:
     def initialize_search_cmd(self):
         """Initialize a search command packet"""
         self.__build_data("DEFAULT_DEVICEID", "")
-        self.__add_byte(function.READ)
-        self.__add_byte(parameter.SEARCH)
+        self.__add_byte(protocol.READ)
+        self.__add_byte(protocol.SEARCH)
         self.__add_checksum()
 
-    def initialize_speed_cmd(self, device: Device, speed: speed):
+    def initialize_speed_cmd(self, device: Device, speed: int):
         """Initialize a speed command packet to be sent to a device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.WRITEREAD)
-        self.__add_byte(parameter.SPEED)
+        self.__add_byte(protocol.WRITEREAD)
+        self.__add_byte(protocol.SPEED)
         self.__add_byte(speed)
         self.__add_checksum()
 
@@ -34,64 +34,64 @@ class VentoExpertPacket:
         The manuals speed is in the interval 0-255
         """
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.WRITEREAD)
-        self.__add_byte(parameter.MANUAL_SPEED)
+        self.__add_byte(protocol.WRITEREAD)
+        self.__add_byte(protocol.MANUAL_SPEED)
         self.__add_byte(manualspeed)
         self.__add_checksum()
 
     def initialize_mode_cmd(self, device: Device, mode: Mode):
         """Intialize a mode command packet to be sent to a device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.WRITEREAD)
-        self.__add_byte(parameter.VENTILATION_MODE)
+        self.__add_byte(protocol.WRITEREAD)
+        self.__add_byte(protocol.VENTILATION_MODE)
         self.__add_byte(mode)
         self.__add_checksum()
 
     def initialize_on_cmd(self, device: Device):
         """Initialize a ON command packet to be sent to a device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.WRITEREAD)
-        self.__add_byte(parameter.ON_OFF)
+        self.__add_byte(protocol.WRITEREAD)
+        self.__add_byte(protocol.ON_OFF)
         self.__add_byte(0x01)
         self.__add_checksum()
 
     def initialize_off_cmd(self, device: Device):
         """Initialize a Off command packet to be sent to a device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.WRITEREAD)
-        self.__add_byte(parameter.ON_OFF)
+        self.__add_byte(protocol.WRITEREAD)
+        self.__add_byte(protocol.ON_OFF)
         self.__add_byte(0x00)
         self.__add_checksum()
 
     def initialize_status_cmd(self, device: Device):
         """Initialize a status command packet to be sent to a device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.READ)
-        self.__add_byte(parameter.ON_OFF)
-        self.__add_byte(parameter.VENTILATION_MODE)
-        self.__add_byte(parameter.SPEED)
-        self.__add_byte(parameter.MANUAL_SPEED)
-        self.__add_byte(parameter.FAN1RPM)
-        self.__add_byte(parameter.FILTER_ALARM)
-        self.__add_byte(parameter.FILTER_TIMER)
-        self.__add_byte(parameter.CURRENT_HUMIDITY)
+        self.__add_byte(protocol.READ)
+        self.__add_byte(protocol.ON_OFF)
+        self.__add_byte(protocol.VENTILATION_MODE)
+        self.__add_byte(protocol.SPEED)
+        self.__add_byte(protocol.MANUAL_SPEED)
+        self.__add_byte(protocol.FAN1RPM)
+        self.__add_byte(protocol.FILTER_ALARM)
+        self.__add_byte(protocol.FILTER_TIMER)
+        self.__add_byte(protocol.CURRENT_HUMIDITY)
         self.__add_checksum()
 
     def initialize_reset_filter_alarm_cmd(self, device: Device):
         """Initialize a reset filter alarm command packet to be sent to a
         device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.WRITE)
-        self.__add_byte(parameter.RESET_FILTER_TIMER)
+        self.__add_byte(protocol.WRITE)
+        self.__add_byte(protocol.RESET_FILTER_TIMER)
         self.__add_checksum()
 
     def initialize_get_firmware_cmd(self, device: Device):
         """Initialize a get firmware and unit type command packet to be sent to a
         device"""
         self.__build_data(device.device_id, device.password)
-        self.__add_byte(function.READ)
-        self.__add_byte(parameter.READ_FIRMWARE_VERSION)
-        self.__add_byte(parameter.UNIT_TYPE)
+        self.__add_byte(protocol.READ)
+        self.__add_byte(protocol.READ_FIRMWARE_VERSION)
+        self.__add_byte(protocol.UNIT_TYPE)
         self.__add_checksum()
 
     @property
@@ -108,9 +108,9 @@ class VentoExpertPacket:
         """Build a packet header with start characters, ID and password"""
         self._data = bytearray(self.maxsize)
         self._pos = 0
-        self.__add_byte(parameter.PACKET_START_CHARACTER)
-        self.__add_byte(parameter.PACKET_START_CHARACTER)
-        self.__add_byte(parameter.PROTOCOL_TYPE)
+        self.__add_byte(protocol.PACKET_START_CHARACTER)
+        self.__add_byte(protocol.PACKET_START_CHARACTER)
+        self.__add_byte(protocol.PROTOCOL_TYPE)
         self.__add_byte(len(device_id))
         for char in device_id:
             self.__add_byte(ord(char))
