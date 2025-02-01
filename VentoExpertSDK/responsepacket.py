@@ -168,7 +168,7 @@ class ResponsePacket(VentoExpertPacket):
                 parameters = self.read_byte()   # read the extended lenght parameter
 
             # print(f"Parameter to be processed: {hex(parameters)}")
-            ''' The cases are not in alphabetical order, but the same oreder as in the Blauberg Vento protocol desription 
+            ''' The cases are not in alphabetical order, but the same oreder as in the Blauberg Vento protocol desription
             for parameteres to make it easier to find the parameter in the list '''
             match parameters:
                 case protocol.ON_OFF:

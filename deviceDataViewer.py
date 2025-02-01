@@ -9,20 +9,20 @@ deviceAdressList = []
 def onchange(device: Device):
     # Callback function when device changes
     print("Device changed\n"
-        f"ip: {device.ip_address}\n"
-        f" unit type: {device.unit_type}\n"
-        f" speed: {device.speed}\n"        
-        f" manualspeed: {device.manualspeed}\n"
-        f" fan1rpm: {device.fan1rpm}\n"
-        # f" fan2rpm: {device.fan2rpm},"
-        f" mode: {device.mode}\n"
-        f" humidity: {device.humidity}\n"
-        f" filter alarm: {device.filter_alarm}\n"
-        f" time to filter maintenance: {device.filter_timer}\n"
-        f" firmware version: {device.firmware_version},"
-        f" firmware date: {device.firmware_date},\n"
-        f" device ID: {device.device_id}\n"
-    )
+          f"ip: {device.ip_address}\n"
+          f" unit type: {device.unit_type}\n"
+          f" speed: {device.speed}\n"
+          f" manualspeed: {device.manualspeed}\n"
+          f" fan1rpm: {device.fan1rpm}\n"
+          # f" fan2rpm: {device.fan2rpm},"
+          f" mode: {device.mode}\n"
+          f" humidity: {device.humidity}\n"
+          f" filter alarm: {device.filter_alarm}\n"
+          f" time to filter maintenance: {device.filter_timer}\n"
+          f" firmware version: {device.firmware_version},"
+          f" firmware date: {device.firmware_date},\n"
+          f" device ID: {device.device_id}\n"
+          )
 
 
 def newdevice_callback(deviceid: str, ip_addr: str):
@@ -48,7 +48,7 @@ def showDiscoveredFans():
         print(i+1, " :  Device = ", deviceAdressList[i][0], ", IP = ", deviceAdressList[i][1])
 
 
-def shutdown(fanClient = None):
+def shutdown(fanClient=None):
     if fanClient is not None:
         print("Closing")
         fanClient.close()
@@ -120,5 +120,6 @@ def main():
             if char == "f":
                 fanClient.reset_filter_alarm(mydevice)
     shutdown(fanClient)
+
 
 main()
