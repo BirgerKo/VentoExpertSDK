@@ -14,8 +14,11 @@ class VentoExpertPacket:
         self._pos = 0
         self.maxsize = 200
 
+    '''The following method initialize the Blauberg Vento data packet for the search command that can be sent to the fan'''
     def initialize_search_cmd(self):
-        """Initialize a search command packet"""
+        """Initialize a search command packet usingf the string "DEFAULT_DEVICEID" as the device ID
+        "DEFAULT_DEVICEID" is a special device ID that Blauberg VEnto uses to search for devices on the network.
+        The search is done by broadcasting the search command to the network on 255.255.255.255"""
         self.__build_data("DEFAULT_DEVICEID", "")
         self.__add_byte(protocol.READ)
         self.__add_byte(protocol.SEARCH)

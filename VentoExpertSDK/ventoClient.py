@@ -69,6 +69,8 @@ class VentoClient:
         """Return the number of devices"""
         return len(self._devices)
 
+    ''' Searches the local network for Blauberg compatible devices
+    def get_device_commands(self, device_id: str):'''
     def search_devices(self, callback):
         self._found_device_callback = callback
         packet = VentoExpertPacket()

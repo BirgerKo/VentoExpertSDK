@@ -128,7 +128,7 @@ class ResponsePacket(VentoExpertPacket):
             func = self.read_byte()
             if func != protocol.RESPONSE:
                 # The search command sent out to "DEFAULT_DEVICEID" will be read here as it goes out as a broadcast and is received with type READ.
-                # That is not a fault.
+                # That is not a fault. "DEFAULT_DEVICEID" is a special device ID that Blauberg VEnto uses to search for devices on the network.
                 return False
             return self.read_parameters()
         except Exception:

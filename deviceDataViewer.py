@@ -43,7 +43,7 @@ def newdevice_callback(deviceid: str, ip_addr: str):
 
 
 def showDiscoveredFans():
-    print("Press number keys to selct fan device :")
+    print("Discoverd devises on the network :")
     for i in range(0, len(deviceAdressList)):
         print(i+1, " :  Device = ", deviceAdressList[i][0], ", IP = ", deviceAdressList[i][1])
 
